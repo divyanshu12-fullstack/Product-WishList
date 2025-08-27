@@ -3,6 +3,8 @@ import Product from "../models/product.model.js";
 
 export const getProducts = async (req, res) => {
     try {
+        // A Mongoose method that retrieves all documents in the 
+        // Product collection(empty {} means no filter).
         const prod = await Product.find({});
         res.status(200).json({ success: true, data: prod });
     } catch (error) {
@@ -16,6 +18,8 @@ export const postProducts = async (req, res) => {
     if (!product.name || !product.price || !product.image) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
+    // Creates a new Product document based on the req.body data, 
+    // using the Product model’s schema.
     const newProduct = new Product(product);
 
     try {
@@ -35,7 +39,7 @@ export const updateProducts = async (req, res) => {
         return res.status(404).json({ success: false, message: "Invalid Product Id" });
     }
     try {
-        // making new true return the updated product
+        // { new: true }: Ensures the updated product is returned (not the old one)
         const updateProduct = await Product.findByIdAndUpdate(id, prod, { new: true });
         if (!updateProduct) {
             return res.status(404).json({ success: false, message: "Product not found" });
