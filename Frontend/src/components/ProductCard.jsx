@@ -7,6 +7,7 @@ import {
   IconButton,
   Image,
   useToast,
+  useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -14,17 +15,45 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
   VStack,
+  Button,
   Input,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { useProductStore } from "../store/product";
+import { useState } from "react";
 
 function ProductCard({ product }) {
-  const { deleteProduct } = useProductStore();
-  const { isOpen, onClose } = useDisclosure();
+  const [updatedProduct, setUpdatedProduct] = useState(product);
+  const textColor = useColorModeValue("gray.600", "gray.200");
+  const bg = useColorModeValue("white", "gray.800");
+
+  const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
+
+  const { onOpen, isOpen, onClose } = useDisclosure();
+
+  const handleUpdateProduct = async (pid, updatedProduct) => {
+    const { success, message } = await updateProduct(pid, updatedProduct);
+    onClose();
+    if (!success) {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Product updated successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleDeleteProduct = async (pid) => {
     const { success, message } = await deleteProduct(pid);
@@ -44,9 +73,6 @@ function ProductCard({ product }) {
       });
     }
   };
-
-  const textColor = useColorModeValue("gray.600", "gray.200");
-  const bg = useColorModeValue("white", "gray.800");
 
   return (
     <Box
@@ -74,7 +100,8 @@ function ProductCard({ product }) {
         </Text>
 
         <HStack spacing={2}>
-          <IconButton icon={<EditIcon />} colorScheme="blue" />
+          <IconButton icon={<EditIcon />} colorScheme="blue" onClick={onOpen} />
+
           <IconButton
             icon={<DeleteIcon />}
             colorScheme="red"
@@ -82,9 +109,9 @@ function ProductCard({ product }) {
           />
         </HStack>
       </Box>
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
+
         <ModalContent>
           <ModalHeader>Update Product</ModalHeader>
           <ModalCloseButton />
@@ -99,7 +126,7 @@ function ProductCard({ product }) {
                 }
               />
               <Input
-                placeholder="Product Price"
+                placeholder="Price"
                 name="price"
                 type="number"
                 value={updatedProduct.price}
@@ -123,6 +150,19 @@ function ProductCard({ product }) {
               />
             </VStack>
           </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => handleUpdateProduct(product._id, updatedProduct)}
+            >
+              Update
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
