@@ -37,23 +37,27 @@ function HomePage() {
           ))}
         </SimpleGrid>
 
-        <Text
-          fontSize={"xl"}
-          textAlign={"center"}
-          fontWeight={"bold"}
-          color="gray.500"
-        >
-          No products found{" "}
-        </Text>
-        <Link to={"/create"}>
-          <Text
-            as="span"
-            color={"blue.500"}
-            _hover={{ textDecoration: "underline" }}
-          >
-            Add Products{" "}
-          </Text>
-        </Link>
+        {products.length === 0 && (
+          <>
+            <Text
+              fontSize={"xl"}
+              textAlign={"center"}
+              fontWeight={"bold"}
+              color="gray.500"
+            >
+              No products found{" "}
+            </Text>
+            <Link to={"/create"}>
+              <Text
+                as="span"
+                color={"blue.500"}
+                _hover={{ textDecoration: "underline" }}
+              >
+                Add Products{" "}
+              </Text>
+            </Link>
+          </>
+        )}
       </VStack>
     </Container>
   );
